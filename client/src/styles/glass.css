@@ -1,0 +1,249 @@
+/* 3D material system -------------------------------------------------------
+   Three physical materials, all built from CSS 3D transforms + layered
+   gradients — no WebGL, no extra libraries.
+
+     .glass-*      bevelled translucent panels (raised slabs)
+     .glossy-tile  small extruded product tiles — icon chips, app tiles
+     .orb          spherical satellites for the hero visual
+   Blur is only applied to surfaces that sit over other content.             */
+
+/* Every glass surface carries a dark base under its sheen, so text stays
+   crisp no matter how vivid the animated world behind it gets. */
+.glass {
+  background: rgba(10, 14, 24, 0.5);
+  border: 1px solid var(--line-1);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(160%);
+  backdrop-filter: blur(var(--blur-md)) saturate(160%);
+  box-shadow: var(--shadow-1);
+}
+
+.glass-card {
+  position: relative;
+  border-radius: var(--r-lg);
+  padding: clamp(20px, 2.2vw, 28px);
+  background:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.015) 55%, rgba(255, 255, 255, 0.005)),
+    linear-gradient(180deg, rgba(9, 12, 21, 0.56), rgba(9, 12, 21, 0.66));
+  border: 1px solid var(--line-1);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(150%);
+  backdrop-filter: blur(var(--blur-md)) saturate(150%);
+  /* bevel: light top, light left, dark bottom, dark right */
+  box-shadow: inset 0 1px 0 var(--bevel-light-soft), inset 1px 0 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45), inset -1px 0 0 rgba(0, 0, 0, 0.3), var(--shadow-1);
+  overflow: hidden;
+  transition: border-color 0.35s var(--ease-out), transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+}
+
+.glass-card--hover:hover {
+  border-color: var(--line-2);
+  transform: translateY(-4px) rotateX(3deg);
+  box-shadow: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 rgba(0, 0, 0, 0.5), var(--shadow-2),
+    0 0 70px -34px var(--accent-glow);
+}
+
+/* Lit top edge — the strongest single cue that a surface is glass. */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4) 18%,
+    rgba(255, 255, 255, 0.4) 82%,
+    transparent
+  );
+}
+
+.glass-panel {
+  position: relative;
+  border-radius: var(--r-xl);
+  background:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02) 45%, rgba(255, 255, 255, 0.004)),
+    linear-gradient(180deg, rgba(8, 11, 19, 0.62), rgba(8, 11, 19, 0.72));
+  border: 1px solid var(--line-2);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 1px 0 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5), inset -1px 0 0 rgba(0, 0, 0, 0.35), var(--shadow-slab);
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6) 25%, rgba(255, 255, 255, 0.6) 75%, transparent);
+}
+
+/* Glossy extruded tile ---------------------------------------------------- */
+
+.glossy-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.06) 42%, rgba(0, 0, 0, 0.34));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* bevel + body shadow + coloured bounce light from the tile's own tint */
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.55), inset 1.5px 0 0 rgba(255, 255, 255, 0.16),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45), inset -1.5px 0 0 rgba(0, 0, 0, 0.28),
+    0 18px 36px -20px var(--tile-glow, rgba(0, 0, 0, 0.9));
+  color: #fff;
+  isolation: isolate;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: translateZ(0);
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+
+.glossy-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tile-tint, transparent);
+  opacity: 0.92;
+  z-index: -1;
+}
+
+/* Specular cap — the reflection that makes it read as a rounded solid. */
+.glossy-tile::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 7%;
+  width: 86%;
+  height: 52%;
+  border-radius: 0 0 62% 62% / 0 0 100% 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.04));
+  filter: blur(1.5px);
+  pointer-events: none;
+}
+
+.glossy-tile:hover {
+  transform: perspective(680px) translateZ(16px) rotateX(8deg) rotateY(-6deg);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.7), inset 0 -3px 6px rgba(0, 0, 0, 0.4),
+    0 30px 50px -22px var(--tile-glow, rgba(0, 0, 0, 0.9));
+}
+
+/* Spherical satellite ----------------------------------------------------- */
+
+.orb {
+  position: relative;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  /* key light, terminator shadow, bounce light, base colour */
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.3) 14%, transparent 34%),
+    radial-gradient(circle at 72% 80%, rgba(0, 0, 0, 0.72) 0%, transparent 52%),
+    radial-gradient(circle at 50% 118%, var(--orb-glow, rgba(255, 255, 255, 0.3)) 0%, transparent 46%),
+    var(--orb-base, rgba(255, 255, 255, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.5), inset 0 -14px 24px rgba(0, 0, 0, 0.6),
+    inset -3px -3px 10px rgba(0, 0, 0, 0.35), 0 30px 60px -24px var(--orb-glow, rgba(0, 0, 0, 0.8)),
+    0 10px 20px -12px rgba(0, 0, 0, 0.9);
+  color: #fff;
+  transform-style: preserve-3d;
+}
+
+/* Soft contact shadow so the sphere sits in space instead of floating flat. */
+.orb::before {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -14%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent 72%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.orb::after {
+  content: '';
+  position: absolute;
+  inset: 7% 11% 56% 11%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), transparent);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* Inputs ------------------------------------------------------------------ */
+
+.glass-input {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--fs-lg);
+  transition: color 0.2s var(--ease-out);
+}
+
+.glass-input::placeholder {
+  color: var(--text-3);
+}
+
+.glass-input:focus {
+  outline: none;
+}
+
+.glass-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Chips & pills ----------------------------------------------------------- */
+
+.glass-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 34ch;
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03)),
+    rgba(10, 14, 24, 0.52);
+  border: 1px solid var(--line-1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.glass-chip--accent {
+  background: linear-gradient(160deg, rgba(94, 234, 212, 0.26), rgba(94, 234, 212, 0.1));
+  border-color: var(--accent-line);
+  color: #b6f5e9;
+}
+
+.glass-chip--warn {
+  background: linear-gradient(160deg, rgba(251, 191, 114, 0.22), rgba(251, 191, 114, 0.08));
+  border-color: var(--warning-line);
+  color: #fbd8a5;
+}
+
+.glass-chip--danger {
+  background: var(--danger-soft);
+  border-color: var(--danger-line);
+  color: #ffc0c0;
+}
+
+.glass-divider {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--line-2) 15%, var(--line-2) 85%, transparent);
+}

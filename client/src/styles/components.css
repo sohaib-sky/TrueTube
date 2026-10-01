@@ -1,0 +1,2074 @@
+﻿/* Component styles â€” matched to the approved TrueTube visual reference. */
+
+/* Buttons â€” extruded pills with a real bevel and press-down depth --------- */
+
+.btn {
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-border: var(--line-2);
+  --btn-color: var(--text-1);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px 24px;
+  min-height: 50px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-color);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 3px rgba(0, 0, 0, 0.4),
+    0 6px 14px -8px rgba(0, 0, 0, 0.8);
+  /* Contains the press ripple's `screen` blend to the button. Without this the
+     blend would reach the page behind it. */
+  isolation: isolate;
+  /* Transform belongs to Framer Motion (spring hover/tap), so it is
+     deliberately absent from this transition list. */
+  transition: background 0.25s var(--ease-out), border-color 0.25s var(--ease-out), color 0.25s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+  overflow: hidden;
+}
+
+.btn__label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* Click ripple -------------------------------------------------------------
+   A blue disc grows from the exact point the pointer landed. It is a span
+   rather than a pseudo-element because the origin differs per press, and it
+   animates on transform and opacity only so the whole effect stays on the
+   compositor. */
+
+.btn__ripple {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  /* Starts at a real size rather than zero: a disc that begins at scale(0) is
+     invisible for its first frames, which is exactly when the eye is looking
+     straight at the button. */
+  transform: translate(-50%, -50%) scale(0.22);
+  /* `screen` is what turns this from a grey smudge into light: it adds to the
+     colour underneath instead of covering it, so the button looks like it is
+     glowing from within. The button isolates itself so the blend cannot reach
+     the page behind it. */
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle,
+    rgba(37, 99, 235, 0.95) 0%,
+    rgba(59, 130, 246, 0.85) 34%,
+    rgba(125, 211, 252, 0.7) 62%,
+    rgba(191, 219, 254, 0.3) 80%,
+    transparent 96%
+  );
+  animation: btn-ripple 900ms linear forwards;
+  will-change: transform, opacity;
+}
+
+/**
+ * The opacity curve is the whole trick.
+ *
+ * A single front-loaded easing (which is right for the expanding transform)
+ * also crushed the opacity: by a third of the way through, the disc was at 12%
+ * and the effect was over before the eye landed on the button. So opacity is
+ * held at nearly full strength across the first half and only then released,
+ * while the scale keeps its snappy expansion through the keyframe stops.
+ */
+@keyframes btn-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.22);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(-50%, -50%) scale(0.68);
+    opacity: 0.92;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* The wash over the whole surface: this is what reads as the button lighting
+   up, and it is the half of the effect that carries past the disc. */
+.btn__flash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    120% 170% at 50% 130%,
+    rgba(147, 197, 253, 0.8) 0%,
+    rgba(59, 130, 246, 0.45) 45%,
+    transparent 78%
+  );
+  box-shadow:
+    inset 0 0 30px rgba(147, 197, 253, 0.75),
+    0 0 30px rgba(59, 130, 246, 0.6);
+}
+
+.btn[data-pressed='true'] .btn__flash {
+  animation: btn-flash 900ms linear forwards;
+}
+
+@keyframes btn-flash {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+  70% {
+    opacity: 0.5;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+/* Reduced motion: the press still registers, it just does not travel.
+   Disabling the animation outright left the button feeling dead on any machine
+   with animations switched off at the OS level, which reads as a broken
+   control rather than a considerate one. */
+@media (prefers-reduced-motion: reduce) {
+  .btn__ripple {
+    animation: btn-ripple-gentle 260ms linear forwards;
+  }
+
+  .btn[data-pressed='true'] .btn__flash {
+    animation: btn-flash-gentle 260ms linear forwards;
+  }
+}
+
+@keyframes btn-ripple-gentle {
+  0% {
+    transform: translate(-50%, -50%) scale(0.55);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.75);
+    opacity: 0;
+  }
+}
+
+@keyframes btn-flash-gentle {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+/* Highlight sweep: a soft light band that crosses the surface on hover. */
+.btn__sweep {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.34) 45%,
+    rgba(255, 255, 255, 0.12) 60%,
+    transparent 100%
+  );
+  transform: translateX(0) skewX(-18deg);
+  transition: transform 0.55s var(--ease-out);
+}
+
+.btn:hover:not(:disabled) .btn__sweep {
+  transform: translateX(360%) skewX(-18deg);
+}
+
+.btn--primary .btn__sweep,
+.btn--aurora .btn__sweep {
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 45%,
+    rgba(255, 255, 255, 0.18) 60%,
+    transparent 100%
+  );
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--line-3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 3px rgba(0, 0, 0, 0.4),
+    0 12px 22px -10px rgba(0, 0, 0, 0.9);
+}
+
+/* Press: the button sinks into the surface. */
+.btn:active:not(:disabled) {
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  --btn-color: var(--on-accent);
+  background: linear-gradient(140deg, #9df8e6 0%, #5eead4 38%, #23c3a4 100%);
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.7), inset 0 -3px 5px rgba(0, 60, 50, 0.35),
+    0 18px 40px -16px var(--accent-glow), 0 6px 12px -6px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: linear-gradient(140deg, #b2fbec 0%, #6defd6 38%, #2ed4b2 100%);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.8), inset 0 -3px 5px rgba(0, 60, 50, 0.3),
+    0 24px 48px -16px var(--accent-glow), 0 8px 16px -8px rgba(0, 0, 0, 0.85);
+}
+
+.btn--primary:active:not(:disabled) {
+  box-shadow: inset 0 3px 8px rgba(0, 60, 50, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn--aurora {
+  --btn-color: #10131c;
+  background: linear-gradient(120deg, #e3f3ff 0%, #e9e9ff 45%, #fce7f4 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.95), inset 0 -3px 5px rgba(120, 130, 180, 0.28),
+    0 16px 34px -18px rgba(160, 200, 255, 0.9), 0 6px 12px -6px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
+}
+
+.btn--aurora:hover:not(:disabled) {
+  background: linear-gradient(120deg, #eef8ff 0%, #f2f0ff 45%, #fdedf9 100%);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-border: var(--line-1);
+}
+
+.btn--sm {
+  min-height: 40px;
+  padding: 9px 18px;
+  font-size: var(--fs-xs);
+}
+
+.btn--icon {
+  min-height: 42px;
+  width: 42px;
+  padding: 0;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  opacity: 0.85;
+  animation: tt-spin 0.7s linear infinite;
+}
+
+@keyframes tt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Logo -------------------------------------------------------------------- */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* On the cool banner the mark inverts to dark glass, so the play glyph
+   reads as negative space and the badge never dissolves into the slab. */
+.header .logo__mark {
+  color: #fff;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04) 40%, transparent 62%),
+    linear-gradient(150deg, #2f3a4d 0%, #171d29 52%, #0a0e15 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 12px 26px -14px rgba(20, 12, 0, 0.9);
+}
+
+/* The wordmark, tagline, CTA and menu button all sat in dark ink because the
+   slab used to be gold. The glass is now dark, so they take the site's own
+   light text — a warm ink that dark could not carry would be invisible. */
+.header .logo__word {
+  color: var(--text-1);
+}
+
+.header .logo__word span:last-child {
+  color: var(--accent);
+}
+
+.header .logo__tagline {
+  color: rgba(167, 177, 194, 0.75);
+  text-shadow: none;
+}
+
+/* The CTA is the one solid, saturated surface in the banner, so it is where the
+   eye lands first. The mint gradient keeps the site's accent identity now that
+   the surrounding glass no longer supplies a warm counterweight. */
+.header__cta {
+  background:
+    linear-gradient(140deg, #7ff0dd 0%, #5eead4 42%, #23c3a4 100%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #04231d;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
+    0 10px 22px -12px rgba(2, 6, 20, 0.9),
+    0 0 24px -12px var(--accent-glow);
+}
+
+.header__cta:hover:not(:disabled) {
+  background: linear-gradient(140deg, #a5f5e8 0%, #7defdb 42%, #2fd4b3 100%);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.9),
+    0 14px 28px -12px rgba(2, 6, 20, 0.95),
+    0 0 30px -10px var(--accent-glow);
+}
+
+.header .nav-toggle {
+  color: var(--text-1);
+  border-color: var(--nav-line-soft);
+  background: var(--nav-pill);
+}
+
+.header .nav-toggle:hover:not(:disabled) {
+  background: var(--nav-pill-hover);
+  border-color: var(--nav-line);
+}
+
+.logo__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 15px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.16) 40%, transparent 62%),
+    linear-gradient(150deg, #bae6fd 0%, #60a5fa 46%, #22d3ee 100%);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 16px 34px -14px rgba(56, 189, 248, 0.95);
+}
+
+.logo__mark::after {
+  content: '';
+  position: absolute;
+  inset: 4px 6px 55% 6px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent);
+  pointer-events: none;
+}
+
+.logo__words {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 4px;
+}
+
+.logo__word {
+  font-size: 21px;
+  font-weight: var(--weight-display);
+  letter-spacing: -0.038em;
+}
+
+.logo__word span:last-child {
+  color: var(--sky);
+}
+
+.logo__tagline {
+  font-size: 9px;
+  font-weight: var(--weight-nav);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b7c2d4;
+  text-shadow: 0 1px 8px rgba(4, 6, 14, 0.8);
+}
+
+/* Header ------------------------------------------------------------------ */
+
+/* Header - a floating slab of cool aurora glass ----------------------------
+   The header itself is a transparent fixed layer; all of the material lives on
+   `.header__inner`, so the slab can float clear of the page edges and the
+   animated world stays visible around and through it. */
+
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  padding-top: clamp(10px, 1.3vw, 16px);
+  pointer-events: none;
+}
+
+.header--scrolled {
+  padding-top: clamp(7px, 0.9vw, 12px);
+}
+
+/* The entrance wrapper: a plain block whose only job is to carry the arrival
+   transform, keeping it clear of the scroll retract and the pointer tilt. */
+.header__enter {
+  will-change: transform, opacity, filter;
+}
+
+.header__inner {
+  position: relative;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  pointer-events: auto;
+
+  /* Real depth: the slab is lifted off the page in the viewer's own
+     perspective rather than being pasted on as a flat rectangle. */
+  transform: perspective(var(--perspective)) translateZ(0);
+  transform-style: preserve-3d;
+
+  border-radius: var(--r-pill);
+
+  /* Three layers make this material rather than a flat fill: a cool body, a
+     lighter sheen that travels across it, and a highlight pooled at the top
+     edge. The animated background reads straight through all of it. */
+  background:
+    linear-gradient(115deg, rgba(94, 234, 212, 0.14) 0%, rgba(129, 140, 248, 0.16) 42%, rgba(56, 189, 248, 0.13) 72%, rgba(94, 234, 212, 0.1) 100%),
+    radial-gradient(130% 200% at 10% -34%, rgba(186, 230, 253, 0.22), transparent 62%),
+    var(--nav-glass);
+  border: 1px solid var(--nav-line);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -2px 8px rgba(2, 6, 20, 0.45),
+    inset 1px 0 0 rgba(255, 255, 255, 0.08),
+    var(--nav-shadow);
+  transition: box-shadow 0.4s var(--ease-out), border-color 0.4s var(--ease-out),
+    background 0.4s var(--ease-out), height 0.4s var(--ease-out);
+}
+
+/* Scrolled: the glass thickens and deepens so the banner keeps its contrast
+   over brighter and busier parts of the world behind it. */
+.header--scrolled .header__inner {
+  background:
+    linear-gradient(115deg, rgba(94, 234, 212, 0.12) 0%, rgba(129, 140, 248, 0.15) 42%, rgba(56, 189, 248, 0.12) 72%, rgba(94, 234, 212, 0.09) 100%),
+    radial-gradient(130% 200% at 10% -34%, rgba(186, 230, 253, 0.18), transparent 62%),
+    var(--nav-glass-2);
+  border-color: var(--nav-line-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 8px rgba(2, 6, 20, 0.5),
+    0 26px 60px -34px rgba(2, 6, 20, 0.95),
+    0 0 60px -30px rgba(94, 234, 212, 0.35);
+}
+
+/* The soft reflection that travels across the slab. */
+.header__inner::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: -40%;
+  width: 34%;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.42) 45%,
+    rgba(255, 255, 255, 0.1) 62%,
+    transparent 100%
+  );
+  transform: skewX(-16deg);
+  transition: transform 1s var(--ease-out);
+}
+
+.header__inner:hover::after {
+  transform: translateX(400%) skewX(-16deg);
+}
+
+.header__logo,
+.header__actions {
+  position: relative;
+  z-index: 1;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  /* Pills need real air between them, otherwise five separate controls read as
+     one long bar with seams in it. */
+  gap: clamp(3px, 0.55vw, 7px);
+}
+
+/* Navigation -------------------------------------------------------------- */
+
+/* Navigation — one pill per item, light text on the cool glass. */
+
+.nav__link {
+  position: relative;
+  padding: 9px 13px;
+  color: var(--text-2);
+  font-size: 0.72rem;
+  font-weight: var(--weight-nav);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  background: var(--nav-pill);
+  transition:
+    color 0.25s var(--ease-out),
+    background 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+
+/* Hover underline: grows from the centre. Framer drives the transform, so the
+   transition list deliberately omits it. */
+.nav__underline {
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The active marker is a single shared element (layoutId) that slides between
+   links, so the indicator travels instead of blinking on. */
+.nav__indicator {
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+  pointer-events: none;
+}
+
+.nav__label {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+}
+
+.nav__link:hover {
+  color: var(--text-1);
+  background: var(--nav-pill-hover);
+  border-color: var(--nav-line-soft);
+}
+
+.nav__link[aria-current='page'] {
+  color: var(--text-1);
+  background: var(--nav-pill-active);
+  border-color: rgba(94, 234, 212, 0.3);
+}
+
+/* (A second .mobile-nav rule further down owns the positioning and shadow;
+   it always won, so this earlier partial copy only ever invited confusion.) */
+
+@media (min-width: 1001px) {
+  .header {
+    padding-top: clamp(12px, 1.5vw, 20px);
+  }
+}
+
+/* The actions sit in their own group, pushed off the nav pills by real air and
+   a hairline rule. Without both, the CTA read as a sixth link and the row lost
+   the one thing the eye should land on first. */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: clamp(10px, 1.4vw, 18px);
+  margin-left: clamp(2px, 0.5vw, 8px);
+  border-left: 1px solid var(--nav-line-soft);
+}
+
+.nav-toggle {
+  display: none;
+}
+
+/* The mobile sheet keeps a dark panel: it overlays arbitrary parts of the
+   world, and a bright slab behind small tap targets costs legibility. The
+   header stays visible above it, since the sheet is pinned open with it. */
+.mobile-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 99;
+  padding-top: calc(var(--header-h) + clamp(16px, 2vw, 26px));
+  background: rgba(8, 11, 18, 0.9);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: blur(28px) saturate(160%);
+  border-bottom: 1px solid var(--nav-line-soft);
+  box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 1);
+}
+
+.mobile-nav__list {
+  list-style: none;
+  padding: 6px 0 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 4px;
+  color: var(--text-1);
+  font-size: 0.8rem;
+  font-weight: var(--weight-nav);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mobile-nav__link:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 1000px) {
+  /* The nav list collapses into the menu, but the primary action stays on the
+     banner — it is the one control a phone user should never have to hunt for. */
+  .nav {
+    display: none;
+  }
+
+  /* The divider and the extra gap exist to set the action group apart from the
+     nav pills. With the pills gone there is nothing to separate from, and what
+     is left is a rule floating between two buttons. */
+  .header__actions {
+    padding-left: 0;
+    margin-left: 0;
+    border-left: 0;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 620px) {
+  .header__cta-text {
+    display: none;
+  }
+
+  .header__cta {
+    min-height: 40px;
+    width: 40px;
+    padding: 0;
+  }
+}
+
+/* Hero -------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  /* Clears the floating banner, including the gap it floats in. */
+  padding-top: calc(var(--header-h) + clamp(48px, 5vw, 76px));
+  padding-bottom: clamp(14px, 1.8vw, 24px);
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  align-items: center;
+  gap: clamp(20px, 2.4vw, 36px);
+  perspective: var(--perspective);
+  perspective-origin: 50% 45%;
+}
+
+/* The orbital centrepiece stacks below the copy — it is never removed. */
+@media (max-width: 1023px) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+}
+
+.hero__stage {
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  background: rgba(9, 12, 21, 0.55);
+  border: 1px solid var(--line-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #d6efec;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero__eyebrow svg {
+  color: var(--mint);
+}
+
+.hero__title {
+  font-size: var(--fs-hero);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.hero__title em {
+  font-style: normal;
+  display: inline-block;
+  /* Bright iridescent stops: the accent line has to hold its own against a
+     vivid animated world, so it never uses mid-tone colours. */
+  background: linear-gradient(100deg, #eaf7ff 0%, #dbe9ff 26%, #efe4ff 52%, #ffe0f4 78%, #ffe9d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Each headline line is its own masked block, so a line must never wrap —
+   a wrap would be clipped by the overflow and reveal mid-word. */
+.hero__line {
+  white-space: nowrap;
+}
+
+/* The glow lives on the line wrapper, not here. `text-shadow` is inherited,
+     and an inherited shadow on a `color: transparent` element paints a solid
+     dark copy of the glyphs straight over the clipped gradient — which is
+     exactly the flat grey this line must not be. */
+  text-shadow: none;
+}
+
+/* The clipped accent line is the painted element. Its wrapper carries the
+   shadow instead, and it also omits `filter` for the same reason. */
+.hero__title-accent {
+  position: relative;
+  text-shadow: 0 2px 16px rgba(12, 8, 32, 0.5);
+}
+
+/* Hero copy sits directly on the animated world, so it carries its own
+   contrast instead of relying on the background. */
+.hero__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  position: relative;
+}
+
+.hero__line > span {
+  display: block;
+  /* `filter` is deliberately omitted from will-change: promoting a layer here
+     breaks `background-clip: text` on the accent line inside it. */
+  will-change: transform, opacity;
+}
+
+.hero__title-accent {
+  position: relative;
+  /* See the note on `.hero__title em`: the glow belongs on this wrapper, never
+     on the clipped element itself. */
+  text-shadow: 0 2px 16px rgba(12, 8, 32, 0.5);
+}
+
+.hero__title-accent em {
+  font-style: normal;
+  display: inline-block;
+  /* Bright iridescent stops: the accent line has to hold its own against a
+     vivid animated world, so it never uses mid-tone colours. */
+  background: linear-gradient(100deg, #eaf7ff 0%, #dbe9ff 26%, #efe4ff 52%, #ffe0f4 78%, #ffe9d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(12, 8, 32, 0.65));
+}
+
+.hero__title,
+.hero__subtitle,
+.section-head__title,
+.section-head__text,
+.platforms__title,
+.platforms__text {
+  text-shadow: 0 2px 18px rgba(4, 6, 14, 0.55), 0 1px 3px rgba(4, 6, 14, 0.5);
+}
+
+.hero__subtitle {
+  margin-top: 20px;
+  max-width: 54ch;
+  color: var(--text-1);
+  opacity: 0.86;
+  font-size: var(--fs-base);
+  line-height: 1.62;
+}
+
+.hero__ctas {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+
+/* Downloader slab --------------------------------------------------------- */
+
+.slab {
+  position: relative;
+  max-width: 952px;
+  margin: clamp(20px, 2.6vw, 34px) auto 0;
+  padding: clamp(16px, 1.8vw, 22px);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Key light behind the panel â€” the reference glows from the lower left. */
+.slab::after {
+  content: '';
+  position: absolute;
+  inset: 6% -12% -34% -12%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.08) 55%, transparent 78%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+.slab__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* The input and the action button live inside one pill, as in the reference. */
+.urlbar {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 66px;
+  padding: 6px 6px 6px 0;
+  border-radius: var(--r-pill);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)),
+    rgba(8, 11, 19, 0.5);
+  border: 1px solid var(--line-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -22px 40px -34px rgba(0, 0, 0, 0.9);
+  transition: border-color 0.25s var(--ease-out), background 0.25s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.urlbar:hover {
+  border-color: var(--line-3);
+}
+
+.urlbar:focus-within {
+  border-color: var(--accent-line);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 0 4px rgba(94, 234, 212, 0.14),
+    0 24px 60px -40px var(--accent-glow);
+}
+
+.urlbar[data-invalid='true'] {
+  border-color: var(--danger-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 4px rgba(255, 138, 138, 0.1);
+}
+
+.urlbar__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  flex: none;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.urlbar:focus-within .urlbar__icon {
+  color: var(--mint);
+}
+
+.urlbar .glass-input {
+  padding: 0 8px;
+}
+
+.urlbar__clear {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+}
+
+.urlbar__clear:hover {
+  color: var(--text-1);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.urlbar__action {
+  flex: 0 0 auto;
+  min-height: 54px;
+  padding-inline: 26px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-base);
+}
+
+.quickaccess {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.quickaccess__label {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.quickaccess__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: var(--r-pill);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02)),
+    rgba(10, 14, 24, 0.5);
+  border: 1px solid var(--line-1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 4px 10px -8px rgba(0, 0, 0, 0.9);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  font-weight: 550;
+  white-space: nowrap;
+  transition: color 0.25s var(--ease-out), border-color 0.25s var(--ease-out), background 0.25s var(--ease-out),
+    transform 0.2s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+.quickaccess__item:hover {
+  color: var(--text-1);
+  border-color: var(--line-2);
+  background: rgba(255, 255, 255, 0.1);
+  transform: perspective(500px) translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 18px -12px rgba(0, 0, 0, 0.95);
+}
+
+.quickaccess__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 10px var(--accent-glow);
+  flex: none;
+}
+
+.slab__hint {
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #9aa5b8;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.slab__hint svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.slab__status {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 760px) {
+  .urlbar {
+    flex-wrap: wrap;
+    padding: 10px;
+    border-radius: var(--r-lg);
+  }
+
+  .urlbar__icon {
+    width: 40px;
+  }
+
+  /* Keep the icon and the field on one line; the button takes the next. */
+  .urlbar .glass-input {
+    flex: 1 1 60px;
+    width: auto;
+    padding: 0 4px;
+  }
+
+  .urlbar__clear {
+    margin-left: auto;
+  }
+
+  .urlbar__action {
+    width: 100%;
+  }
+}
+
+/* Alerts ------------------------------------------------------------------ */
+
+.alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 15px 17px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-1);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.alert__icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+.alert__title {
+  font-weight: 650;
+  color: var(--text-1);
+}
+
+.alert__body {
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+.alert__code {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  /* The code is the one line worth quoting back, so it has to be readable.
+     `--text-4` was so dark against the tinted alert that it disappeared. */
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.alert--error {
+  background: var(--danger-soft);
+  border-color: var(--danger-line);
+}
+
+.alert--error .alert__icon {
+  color: var(--danger);
+}
+
+.alert--warning {
+  background: var(--warning-soft);
+  border-color: var(--warning-line);
+}
+
+.alert--warning .alert__icon {
+  color: var(--warning);
+}
+
+.alert--info {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+
+.alert--info .alert__icon {
+  color: var(--mint);
+}
+
+/* Result card ------------------------------------------------------------- */
+
+.result {
+  margin-top: clamp(18px, 2.2vw, 26px);
+}
+
+/* Result, alerts and skeletons align to the same measure as the panel. */
+.result,
+.analyzer-feedback {
+  max-width: 952px;
+  margin-inline: auto;
+}
+
+.analyzer-feedback {
+  margin-top: 16px;
+}
+
+.result__media {
+  display: grid;
+  grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+}
+
+.result__thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+
+.result__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.result__thumb-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+  background: linear-gradient(140deg, rgba(94, 234, 212, 0.12), rgba(56, 189, 248, 0.07));
+}
+
+.result__body {
+  padding: clamp(18px, 2.2vw, 26px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.result__title {
+  font-size: var(--fs-xl);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.result__uploader {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+
+.result__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.result__section {
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.2vw, 26px);
+  border-top: 1px solid var(--line-1);
+}
+
+.result__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.result__section-title {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.result__section-note {
+  font-size: var(--fs-xs);
+  color: var(--text-4);
+}
+
+.formats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formats__group-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-3);
+  margin-bottom: 9px;
+}
+
+.formats__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.format-chip {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: 50px;
+  padding: 10px 17px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line-1);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.016));
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  cursor: pointer;
+  overflow: hidden; /* clips the press ripple to the chip */
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -2px 0 rgba(0, 0, 0, 0.45),
+    0 6px 14px -10px rgba(0, 0, 0, 0.9);
+  transform-style: preserve-3d;
+  transition: background 0.22s var(--ease-out), border-color 0.22s var(--ease-out), color 0.22s var(--ease-out),
+    transform 0.2s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+/* The chip's content sits above the press ripple, exactly as on a button. */
+.format-chip__label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.format-chip:hover {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: var(--line-2);
+  transform: perspective(560px) translateY(-3px) rotateX(5deg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 14px 24px -14px rgba(0, 0, 0, 0.95);
+}
+
+.format-chip:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.format-chip[aria-pressed='true'] {
+  color: #04231f;
+  background: linear-gradient(140deg, #a2f8e6, #2fd0b0);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -3px 5px rgba(0, 60, 50, 0.3),
+    0 16px 32px -16px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.format-chip__meta {
+  font-size: 0.68rem;
+  font-weight: 550;
+  color: var(--text-3);
+  letter-spacing: 0.01em;
+}
+
+.format-chip[aria-pressed='true'] .format-chip__meta {
+  color: rgba(4, 35, 31, 0.72);
+}
+
+/* Pressing a chip lights it up the same way a button does. The selected chip
+   keeps its mint identity underneath — the blue is a transient press, not a
+   new state. */
+.format-chip[data-pressed='true'] {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 24px rgba(125, 211, 252, 0.55),
+    0 0 26px rgba(59, 130, 246, 0.45);
+}
+
+.format-chip__badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: var(--r-pill);
+  background: var(--warning-soft);
+  border: 1px solid var(--warning-line);
+  color: var(--warning);
+}
+
+.download-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.download-bar__row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.download-bar__selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.download-bar__selected strong {
+  color: var(--text-1);
+  font-weight: 650;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.progress__track {
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line-1);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7dd3fc, #5eead4);
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+
+.progress__fill--indeterminate {
+  animation: tt-indeterminate 1.25s var(--ease-in-out) infinite;
+}
+
+@keyframes tt-indeterminate {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(280%);
+  }
+}
+
+.progress__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .result__media {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Skeletons ---------------------------------------------------------------- */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-xs);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: tt-shimmer 1.5s infinite;
+}
+
+@keyframes tt-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Section headings --------------------------------------------------------- */
+
+.section-head {
+  max-width: 60ch;
+  /* Was clamp(26px, 3.4vw, 42px). On a page whose heading is followed by a tall
+     scene — the platform grid — that 42px stacked with the scene's own inset
+     into a band of empty space roughly 80px tall, which read as the page
+     opening into nothing before the content actually started. */
+  margin-bottom: clamp(18px, 2.2vw, 28px);
+}
+
+.section-head--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-head__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  background: rgba(9, 12, 21, 0.55);
+  border: 1px solid var(--line-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #d6efec;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.section-head__title {
+  font-size: var(--fs-2xl);
+  letter-spacing: -0.035em;
+}
+
+.section-head__text {
+  margin-top: 14px;
+  color: var(--text-2);
+  font-size: var(--fs-lg);
+  line-height: 1.6;
+}
+
+/* Features â€” one dense row, exactly like the reference ------------------- */
+
+.features {
+  display: grid;
+  gap: clamp(10px, 1.1vw, 16px);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+/* The grid cell owns the reveal; the card inside owns the pointer tilt. */
+.feature-cell {
+  min-width: 0;
+  display: flex;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  min-height: 156px;
+  border-radius: var(--r-lg);
+  padding: 20px 14px 22px;
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015) 58%, rgba(255, 255, 255, 0.005)),
+    linear-gradient(180deg, rgba(9, 12, 21, 0.54), rgba(9, 12, 21, 0.64));
+  border: 1px solid var(--line-1);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(150%);
+  backdrop-filter: blur(var(--blur-md)) saturate(150%);
+  /* 3D bevel: lit top-left edge, shaded bottom-right, deep contact shadow */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 1px 0 0 rgba(255, 255, 255, 0.05),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5), inset -1px 0 0 rgba(0, 0, 0, 0.32), 0 24px 40px -30px rgba(0, 0, 0, 0.9);
+  transform-style: preserve-3d;
+  /* Transform belongs to the tilt motion values, so it is not transitioned. */
+  transition: border-color 0.35s var(--ease-out), box-shadow 0.4s var(--ease-out);
+  will-change: transform;
+}
+
+/* Hover depth is expressed through light, not transform: the tilt hook owns
+   the transform outright. */
+.feature:hover {
+  border-color: var(--line-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), inset 0 -2px 0 rgba(0, 0, 0, 0.45),
+    0 40px 70px -40px rgba(0, 0, 0, 1), 0 0 80px -36px var(--accent-glow);
+}
+
+.feature__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -14px 24px -14px rgba(255, 255, 255, 0.24),
+    0 18px 36px -18px var(--tile-glow, rgba(0, 0, 0, 0.9));
+}
+
+.feature__title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.feature__text {
+  color: var(--text-2);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 1100px) {
+  .features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .features {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Platforms + how it works band â€” three columns, as in the reference ----- */
+
+.band {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.32fr) minmax(0, 0.96fr);
+  gap: clamp(18px, 2.2vw, 28px);
+  align-items: start;
+}
+
+.platforms__copy {
+  padding-top: 6px;
+}
+
+.platforms__title {
+  font-size: var(--fs-2xl);
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.platforms__title em {
+  font-style: normal;
+  display: inline-block;
+  background: linear-gradient(100deg, #eaf7ff, #e6ddff 55%, #ffe0f4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* No shadow or filter on a background-clip:text element — see above. */
+}
+
+.platforms__text {
+  margin-top: 14px;
+  max-width: 40ch;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.62;
+}
+
+.platforms__actions {
+  margin-top: 20px;
+}
+
+.appgrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 1vw, 12px);
+}
+
+.appgrid__item {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-align: center;
+  padding: 4px;
+  line-height: 1.15;
+  overflow: hidden;
+}
+
+.appgrid__item span {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.appgrid__more {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line-2);
+  color: var(--text-1);
+  font-size: 0.9rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
+}
+
+.appgrid__more:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--line-3);
+  transform: perspective(600px) translateY(-3px) translateZ(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 16px 26px -16px rgba(0, 0, 0, 0.95);
+}
+
+.appgrid__more small {
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.platforms__notice {
+  margin-top: 18px;
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  line-height: 1.65;
+}
+
+.platforms__notice svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* How it works panel ------------------------------------------------------- */
+
+/* Full-width strip: the three steps sit in one row under the 3D universe. */
+.steps-panel {
+  padding: clamp(22px, 2.6vw, 32px);
+  border-radius: var(--r-lg);
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02) 55%, rgba(255, 255, 255, 0.005)),
+    linear-gradient(180deg, rgba(9, 12, 21, 0.6), rgba(9, 12, 21, 0.7));
+  border: 1px solid var(--line-2);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  backdrop-filter: blur(var(--blur-lg)) saturate(150%);
+  box-shadow: var(--shadow-2);
+  max-width: 940px;
+  margin-inline: auto;
+}
+
+.steps-panel__title {
+  font-size: var(--fs-xl);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.steps {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.2vw, 30px);
+}
+
+.steps {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  padding-bottom: 0;
+}
+
+.step:last-child {
+  padding-bottom: 0;
+}
+
+.step__rail {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 30px;
+}
+
+.step__number {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--line-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: var(--text-1);
+}
+
+.step__line {
+  position: absolute;
+  top: 30px;
+  bottom: -24px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg, var(--line-2), rgba(255, 255, 255, 0.03));
+  transform: translateX(-50%);
+  display: none;
+}
+
+/* The tilt wrapper: it owns the pointer transform, while the panel inside it
+   owns the reveal. Two elements, so neither system overwrites the other. */
+.steps-tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.step__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.step__icon-inner {
+  display: inline-flex;
+  will-change: transform;
+}
+
+.step__title {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.step__text {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.58;
+}
+
+@media (max-width: 1000px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .platforms__copy {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .appgrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* FAQ ---------------------------------------------------------------------- */
+
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+.faq__item {
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-1);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    rgba(9, 12, 21, 0.56);
+  overflow: hidden;
+  transition: border-color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+
+.faq__item[data-open='true'] {
+  border-color: var(--accent-line);
+  background:
+    linear-gradient(165deg, rgba(94, 234, 212, 0.08), rgba(255, 255, 255, 0.012)),
+    rgba(9, 12, 21, 0.66);
+}
+
+.faq__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 19px 22px;
+  background: none;
+  border: 0;
+  text-align: left;
+  color: var(--text-1);
+  font-size: var(--fs-base);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  cursor: pointer;
+}
+
+.faq__trigger:hover {
+  color: var(--mint);
+}
+
+.faq__chevron {
+  flex: none;
+  color: var(--text-3);
+}
+
+.faq__panel {
+  overflow: hidden;
+}
+
+.faq__answer {
+  padding: 0 22px 21px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.68;
+  max-width: 72ch;
+}
+
+/* Footer -------------------------------------------------------------------- */
+
+.footer {
+  border-top: 1px solid var(--line-1);
+  padding-block: 22px 26px;
+  margin-top: clamp(40px, 5vw, 68px);
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.014));
+}
+
+.footer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 28px;
+  flex-wrap: wrap;
+}
+
+.footer__note {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  max-width: 46ch;
+  order: 3;
+  flex: 1 1 100%;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.footer__credit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}
+
+.footer__links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer__links a {
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  font-weight: 550;
+}
+
+.footer__links a:hover {
+  color: var(--text-1);
+}
+
+.footer__legal {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-4);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+
+@media (max-width: 720px) {
+  .footer__note {
+    order: 3;
+    text-align: left;
+  }
+}
+
+/* Prose pages ---------------------------------------------------------------- */
+
+.prose {
+  color: var(--text-2);
+  font-size: var(--fs-base);
+  line-height: 1.75;
+}
+
+.prose > * + * {
+  margin-top: 16px;
+}
+
+.prose h2 {
+  margin-top: 40px;
+  font-size: var(--fs-xl);
+  color: var(--text-1);
+  scroll-margin-top: calc(var(--header-h) + 56px);
+}
+
+.prose h3 {
+  margin-top: 28px;
+  font-size: var(--fs-lg);
+  color: var(--text-1);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prose strong {
+  color: var(--text-1);
+  font-weight: 650;
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line-1);
+  color: #b6f5e9;
+}
+
+.updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: var(--text-4);
+}
+
+.page {
+  padding-top: calc(var(--header-h) + clamp(48px, 5vw, 76px));
+  padding-bottom: clamp(40px, 6vw, 72px);
+}
+
+.page__title {
+  font-size: var(--fs-2xl);
+  margin-bottom: 12px;
+}
+
+.page__lead {
+  color: var(--text-2);
+  font-size: var(--fs-lg);
+  max-width: 64ch;
+}
+
+.notfound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding-block: clamp(60px, 12vw, 140px);
+}
+
+.notfound__code {
+  font-size: clamp(3rem, 12vw, 6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line-3);
+}

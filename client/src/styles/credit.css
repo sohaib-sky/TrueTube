@@ -1,0 +1,113 @@
+/* Developer credit ---------------------------------------------------------- */
+
+/* A signature, not a headline.
+   Everything here is deliberately small and low-contrast so it reads as a quiet
+   mark at the end of a section rather than as content competing with it. The
+   hierarchy between the three parts is carried by weight and ink, not by size:
+   a glow at this type size bleeds into the animated background instead of
+   reading as emphasis. */
+.credit {
+  /* Enough air to sit as a closing line rather than touching the element above
+     it. Without this it landed flush against the analyzer card in the hero and
+     read as part of that card. */
+  margin: clamp(20px, 2.4vw, 30px) 0 0;
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  /* --text-3 rather than --text-4: the credit sits over the moving aurora, and
+     the dimmest token lost its contrast entirely against a bright patch. */
+  color: var(--text-3);
+  /* Kept out of the layout: a long credit on a narrow screen must wrap rather
+     than force the section wider and introduce a horizontal scrollbar. */
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+.credit--start {
+  text-align: left;
+}
+
+.credit--center {
+  text-align: center;
+  margin-inline: auto;
+}
+
+.credit--end {
+  text-align: right;
+}
+
+/* The academy name is the part worth reading, so it carries a medium weight and
+   a brighter ink while staying at exactly the same size. */
+.credit__name {
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+/* The year and symbol are the quietest part. */
+.credit__year {
+  white-space: nowrap;
+}
+
+/* Footer: the signature band.
+   The credit sits in its own band behind a hairline, and inside that band it is
+   a small dark pill with a faint silver rim. A pill rather than loose text,
+   because the point of a signature is that it looks stamped on rather than
+   typed in — and the hairline gives it an edge to belong to instead of letting
+   it float between the links and the legal paragraph. */
+.footer__signature {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(16px, 2vw, 24px);
+  padding-top: clamp(16px, 2vw, 22px);
+  border-top: 1px solid var(--line-2);
+}
+
+.credit--footer {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: var(--r-pill);
+  /* Darker than the footer behind it, with a light top edge, so it reads as a
+     physical chip lifted off the page. */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(2, 5, 14, 0.42));
+  border: 1px solid rgba(214, 228, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 10px 26px -16px rgba(0, 0, 0, 0.9);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  /* Soft white: deliberately not the mint accent. The badge has to read as a
+     quiet signature on every background the aurora passes through, and a
+     coloured tint would fight whatever hue happened to be behind it. */
+  color: rgba(222, 233, 250, 0.74);
+}
+
+.credit--footer .credit__name {
+  color: #f2f7ff;
+  font-weight: 650;
+  text-shadow: 0 1px 12px rgba(190, 214, 255, 0.3);
+}
+
+.credit--footer .credit__year {
+  color: rgba(222, 233, 250, 0.62);
+}
+
+/* On a phone the pill still has to fit without touching the edges. */
+@media (max-width: 420px) {
+  .credit--footer {
+    padding: 7px 14px;
+    font-size: 0.68rem;
+    gap: 5px;
+  }
+}
+
+/* Small sections get the credit in the bottom area with a top rule, so it reads
+   as a colophon on the card instead of floating in the middle of the content. */
+.credit--compact {
+  margin-top: auto;
+  padding-top: clamp(14px, 1.5vw, 20px);
+  border-top: 1px solid var(--line-2);
+}

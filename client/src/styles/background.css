@@ -1,0 +1,65 @@
+/* Global 3D world background -----------------------------------------------
+   One fixed layer, one continuous world behind every section. The CSS
+   atmosphere sits underneath as a permanent fallback, so the page can never
+   show a black strip, a canvas edge or a seam.                             */
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  background: #0a0d16;
+}
+
+/* Always-present atmosphere: matches the WebGL gradient so the two are
+   indistinguishable, and covers any WebGL failure. */
+.bg__fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 120% at 0% 100%, rgba(34, 211, 238, 0.55), transparent 55%),
+    radial-gradient(120% 120% at 28% 20%, rgba(99, 102, 241, 0.5), transparent 58%),
+    radial-gradient(130% 130% at 55% 70%, rgba(168, 85, 247, 0.5), transparent 60%),
+    radial-gradient(120% 120% at 78% 25%, rgba(236, 72, 153, 0.5), transparent 58%),
+    radial-gradient(110% 110% at 100% 80%, rgba(249, 115, 22, 0.55), transparent 55%),
+    linear-gradient(105deg, #0ea5e9 0%, #2563eb 18%, #6366f1 38%, #a855f7 55%, #ec4899 72%, #fb923c 88%, #fbbf24 100%);
+}
+
+.bg__canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Keeps white UI text readable over the vivid field without flattening it.
+   The glass surfaces carry their own darker base, so this stays light. */
+.bg__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 9, 18, 0.3) 0%, rgba(6, 9, 18, 0.38) 45%, rgba(5, 7, 14, 0.66) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg__scrim {
+    background: linear-gradient(180deg, rgba(6, 9, 18, 0.4) 0%, rgba(6, 9, 18, 0.46) 45%, rgba(5, 7, 14, 0.7) 100%);
+  }
+}

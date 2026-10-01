@@ -1,0 +1,31 @@
+# Keep the build context small and the image cache useful.
+
+# Dependencies are reinstalled inside the image from package-lock.json. Copying
+# the host's node_modules would be both wrong (wrong platform, stale) and slow.
+node_modules
+**/node_modules
+
+# Build tooling output. The image rebuilds these itself; shipping the host's copy
+# would risk baking in a stale build.
+server/public
+client/dist
+dist
+
+# Tool binaries are downloaded during the image build, not stored in the repo.
+# FFmpeg alone is ~80 MB on Linux and changes often, so committing it would bloat
+# every clone for a file most contributors never run.
+.tools
+
+# Runtime scratch space and the portable folder produced by the packaging script.
+server/downloads
+TrueTube
+
+# Logs, tests and editor noise.
+*.log
+.runtime
+.git
+.gitignore
+*.md
+!README.md
+.vscode
+.idea

@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+  The source for the iOS home-screen icon.
+
+  A square layout of its own, not a crop of og-image.html: the share card is a
+  1200x630 landscape composition, and scaling that into 180x180 would leave the
+  wordmark microscopic and the device mock half off the edge. iOS also does not
+  round or mask the icon itself beyond the corner radius it applies, and it
+  renders any transparency as black, so this is a full-bleed square.
+
+  Run .runtime/og-image.mjs to regenerate.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap');
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        width: 180px;
+        height: 180px;
+        font-family: Inter, system-ui, sans-serif;
+        /* Opaque and full-bleed on purpose: iOS composites transparency over
+           black, so any alpha here would show as a dark fringe. */
+        background:
+          radial-gradient(260px 200px at 14% 4%, #2b4bd4 0%, transparent 62%),
+          radial-gradient(240px 190px at 96% 10%, #b4299b 0%, transparent 62%),
+          radial-gradient(230px 180px at 84% 104%, #d1462f 0%, transparent 58%),
+          linear-gradient(150deg, #101a3c 0%, #080b18 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .mark {
+        width: 104px;
+        height: 104px;
+        border-radius: 30px;
+        background: linear-gradient(150deg, #323d52 0%, #171d29 52%, #0a0e15 100%);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        box-shadow:
+          inset 0 2px 0 rgba(255, 255, 255, 0.32),
+          0 14px 30px -10px rgba(0, 0, 0, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .mark svg { width: 46px; height: 46px; fill: #fff; }
+    </style>
+  </head>
+  <body>
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+    </div>
+  </body>
+</html>

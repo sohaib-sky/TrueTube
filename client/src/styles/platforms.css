@@ -1,0 +1,77 @@
+/* 3D platform universe (Three.js / React Three Fiber) ---------------------
+   The scene itself is rendered on a WebGL canvas; these rules only handle the
+   frame around it, the fallback shimmer and the accessible control bar.      */
+
+/* No container, no bar, no panel: the cards float directly over the site's
+   animated world. Nothing here may paint a background. */
+.universe {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  margin-inline: auto;
+  background: transparent;
+  isolation: auto;
+}
+
+.universe__canvas {
+  display: block;
+  width: 100% !important;
+  /* Height was clamp(560px, 62vw, 860px), which reached 793px on a laptop and
+   860px on a desktop. On its own page that pushed the whole card grid below the
+   fold, so arriving at Supported looked like an empty band before any content.
+   The scene keeps its aspect because both the camera and the card ring are
+   derived from the canvas, so this only shortens it. */
+height: clamp(460px, 52vw, 700px) !important;
+  background: transparent;
+  touch-action: pan-y;
+}
+
+/* Status line: text only, no plate, no strip, no scrim. */
+.universe__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px 4px;
+  color: #e6ecf6;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-shadow: 0 1px 12px rgba(4, 6, 14, 0.9), 0 1px 3px rgba(4, 6, 14, 0.8);
+}
+
+.universe__status .quickaccess__dot {
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.25);
+}
+
+/* Fallback shown while the 3D bundle loads, or when WebGL is unavailable.
+   It floats over the background exactly like the real scene does. */
+.universe__fallback {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(9px, 1.1vw, 14px);
+  padding: clamp(18px, 2.4vw, 34px);
+  height: clamp(560px, 62vw, 860px);
+  align-content: center;
+  background: transparent;
+}
+
+.universe__ghost {
+  aspect-ratio: 1;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 18px 34px -18px rgba(0, 0, 0, 0.6);
+  animation: tile-pulse 1.8s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .universe__canvas,
+  .universe__fallback {
+    height: 620px !important;
+  }
+
+  .universe__fallback {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

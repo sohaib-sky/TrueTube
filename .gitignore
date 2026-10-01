@@ -1,0 +1,39 @@
+# Dependencies — rebuilt inside the container from package-lock.json
+node_modules/
+
+# Build output. The Docker build produces these itself, and committing them
+# means shipping a stale build that the image never uses.
+server/public/
+client/dist/
+dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Runtime artifacts (temporary download jobs)
+server/downloads/*
+!server/downloads/.gitkeep
+
+# Local binaries (yt-dlp / ffmpeg).
+# Never committed: ffmpeg alone is ~159 MB, and GitHub rejects any file over
+# 100 MB. The Dockerfile downloads both during the image build instead.
+.tools/
+
+# The portable build output — a full copy of the app plus its tools.
+TrueTube/
+
+# Test scripts and scratch space
+.runtime/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

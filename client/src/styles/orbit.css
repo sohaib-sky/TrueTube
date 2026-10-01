@@ -1,0 +1,275 @@
+/* 3D orbital system -------------------------------------------------------
+   A real CSS 3D carousel: the stage owns the perspective, the ring rotates on
+   the Y axis inside a preserve-3d context, and every sphere is pushed out on
+   Z. The browser depth-sorts them, so spheres travel in front of and behind
+   the centre core. Everything animates on transform / opacity only.          */
+
+.orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: min(420px, 100%);
+  height: var(--orbit-size, 440px);
+
+  /* Scene scale — reduced on smaller screens, never removed.
+     The ring is deliberately wide relative to the core so spheres travelling
+     behind it still peek out and the composition never looks lopsided. */
+  --sphere: 72px;
+  --core: 156px;
+  --orbit-depth: 212px;
+  --orbit-duration: 30s;
+
+  transform-style: preserve-3d;
+  touch-action: pan-y;
+}
+
+.orbit__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  perspective: 1250px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
+/* The large ambient halo and the structural ring were both removed: the
+   composition now reads directly against the site's animated background, with
+   no circular shape drawn behind it. */
+
+.orbit__ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--orbit-tilt, -20deg));
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotateX(var(--orbit-tilt, -20deg)) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(var(--orbit-tilt, -20deg)) rotateY(360deg);
+  }
+}
+
+/* One sphere station on the ring. */
+.orbit__slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: rotateY(var(--slot-angle)) translateZ(var(--orbit-depth, 168px));
+  transform-style: preserve-3d;
+}
+
+/* Billboard: undoes the ring rotation so the sphere always faces the camera.
+   A sphere is view-independent; a flat disc would be squashed edge-on. */
+.orbit__billboard {
+  position: absolute;
+  transform-style: preserve-3d;
+  animation-name: orbit-billboard;
+  animation-duration: var(--orbit-duration, 30s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+}
+
+@keyframes orbit-billboard {
+  from {
+    transform: rotateY(var(--billboard-from, 0deg)) rotateX(20deg);
+  }
+  to {
+    transform: rotateY(calc(var(--billboard-from, 0deg) - 360deg)) rotateX(20deg);
+  }
+}
+
+/* Depth scale — front of the orbit reads larger. Uses the independent `scale`
+   property so it composes with the transform above.
+   The counter-rotation must start with NO delay (its offset cancels against the
+   ring's angle); only the depth effect is phase-shifted. */
+.orbit__billboard {
+  animation-name: orbit-billboard, orbit-depth-scale;
+  animation-duration: var(--orbit-duration, 30s), var(--orbit-duration, 30s);
+  animation-timing-function: linear, linear;
+  animation-iteration-count: infinite, infinite;
+  animation-delay: 0s, var(--depth-delay, 0s);
+}
+
+.orbit__sphere {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--sphere, 76px);
+  height: var(--sphere, 76px);
+  margin: calc(var(--sphere, 76px) / -2) 0 0 calc(var(--sphere, 76px) / -2);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  /* lit top-left, terminator bottom-right, coloured bounce from below */
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.25) 16%, transparent 38%),
+    radial-gradient(circle at 74% 80%, rgba(0, 0, 0, 0.55) 0%, transparent 56%),
+    radial-gradient(circle at 50% 116%, var(--orb-glow) 0%, transparent 48%),
+    linear-gradient(155deg, var(--orb-color) 0%, var(--orb-deep) 100%);
+  box-shadow: inset 0 3px 7px rgba(255, 255, 255, 0.45), inset 0 -12px 22px rgba(0, 0, 0, 0.5),
+    inset -3px -2px 8px rgba(0, 0, 0, 0.35), 0 18px 34px -18px var(--orb-glow),
+    0 6px 14px -10px rgba(0, 0, 0, 0.9);
+  /* Depth: spheres at the back of the orbit recede. Pure opacity, so it stays
+     on the compositor and never rasterises a layer box. */
+  animation: orbit-depth-fade var(--orbit-duration, 30s) linear infinite;
+  animation-delay: var(--depth-delay, 0s);
+}
+
+/* Specular cap. */
+.orbit__specular {
+  position: absolute;
+  inset: 8% 13% 58% 13%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.65), transparent);
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.orbit__icon {
+  position: relative;
+  z-index: 4;
+  color: #fff;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+}
+
+/* Depth shading — animates the back of the orbit darker. Cheap alternative to
+   animating a filter, and it stays on the compositor. */
+.orbit__shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #04070d;
+  opacity: 0.42;
+  z-index: 5;
+  pointer-events: none;
+  animation: orbit-depth var(--orbit-duration, 30s) linear infinite;
+  animation-delay: var(--depth-delay, 0s);
+}
+
+@keyframes orbit-depth {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes orbit-depth-scale {
+  0%,
+  100% {
+    scale: 1.1;
+  }
+  50% {
+    scale: 0.88;
+  }
+}
+
+.orbit__tooltip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  transform: translateX(-50%) translateZ(1px);
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  background: rgba(6, 10, 16, 0.9);
+  border: 1px solid var(--line-2);
+  color: var(--text-1);
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
+  pointer-events: none;
+}
+
+.orbit__sphere:hover .orbit__tooltip {
+  opacity: 1;
+}
+
+/* Centre core — raised, glass, cyan/blue. */
+.orbit__core {
+  position: relative;
+  z-index: 6;
+  width: var(--core, 176px);
+  height: var(--core, 176px);
+  transform: translateZ(30px);
+  display: grid;
+  place-items: center;
+  border-radius: 34px;
+  isolation: isolate;
+  transition: box-shadow 0.4s var(--ease-out);
+}
+
+.orbit__core-face {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(130% 100% at 26% 10%, rgba(255, 255, 255, 0.5), transparent 58%),
+    linear-gradient(158deg, #c9fff4 0%, #6ef0d5 26%, #3fd2f0 58%, #2b8fe0 82%, #1c6fd0 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.7), inset 0 -14px 26px rgba(10, 60, 90, 0.28),
+    inset 5px 0 12px rgba(255, 255, 255, 0.2), 0 26px 50px -26px rgba(0, 0, 0, 0.95),
+    0 0 100px -12px rgba(56, 189, 248, 0.6);
+  transition: box-shadow 0.4s var(--ease-out);
+}
+
+/* The real depth cue: a soft cast shadow on the floor of the scene. */
+.orbit__core-back {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 74%;
+  height: 22%;
+  border-radius: 50%;
+  transform: translateZ(-30px);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.65), transparent 75%);
+  filter: blur(10px);
+}
+
+.orbit__core:hover .orbit__core-face {
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.8), inset 0 -14px 26px rgba(10, 60, 90, 0.22),
+    0 30px 60px -26px rgba(0, 0, 0, 0.95), 0 0 140px -4px rgba(56, 189, 248, 0.75);
+}
+
+.orbit__core-icon {
+  position: relative;
+  z-index: 2;
+  color: #f2feff;
+  filter: drop-shadow(0 4px 14px rgba(6, 46, 52, 0.6));
+  transform: translateZ(22px);
+}
+
+/* Responsive: scale the whole system, never remove it. */
+@media (max-width: 1023px) {
+  .orbit {
+    --orbit-size: 430px;
+    --sphere: 62px;
+    --core: 138px;
+    --orbit-depth: 186px;
+  }
+}
+
+@media (max-width: 640px) {
+  .orbit {
+    --orbit-size: 300px;
+    --sphere: 44px;
+    --core: 104px;
+    --orbit-depth: 124px;
+  }
+}

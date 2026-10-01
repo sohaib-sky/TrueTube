@@ -1,0 +1,17 @@
+{
+  "name": "TrueTube — Modern Video Download Utility",
+  "short_name": "TrueTube",
+  "description": "Analyze supported video URLs and download the real formats a source offers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06070a",
+  "theme_color": "#06070a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

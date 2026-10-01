@@ -1,0 +1,56 @@
+# Render blueprint — deploys TrueTube in one step.
+#
+# Render reads this from the repository root. Creating a Blueprint and pointing
+# it at this file provisions the service with the settings below.
+#
+# Read this before assuming it will work perfectly: the Hobby tier is free but it
+# idles out after 15 minutes, gives the container 512 MB of RAM, and gives the
+# service a datacenter IP. That last point matters — YouTube refuses requests
+# from datacenter ranges, so downloads from this deployment will often fail on
+# YouTube specifically while working on TikTok, Facebook and similar sources.
+# That is a property of the host, not a fault in this application.
+
+services:
+  - type: web
+    name: truetube
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+
+    # How long Render waits for the app to answer before giving up on a deploy.
+    # The first start compiles nothing but does probe yt-dlp and FFmpeg, so this
+    # is generous on purpose.
+    autoDeploy: true
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Render assigns this; the app reads PORT from the environment.
+      - key: PORT
+        value: 5000
+
+      # Every limiter counts by client IP. Render forwards the real address in
+      # X-Forwarded-For, so without this the whole internet counts as one address
+      # and the first few downloads exhaust the shared bucket.
+      - key: TRUST_PROXY
+        value: "true"
+
+      # Free instances are disposable, so keep the ceiling low enough that a
+      # burst does not exhaust the shared per-IP bucket, while still allowing a
+      # normal person several downloads in a row.
+      - key: RATE_LIMIT_DOWNLOAD
+        value: 20
+      - key: RATE_LIMIT_ANALYZE
+        value: 60
+      - key: MAX_CONCURRENT_DOWNLOADS
+        value: 2
+
+      # Set this to the public URL once you have a domain, so canonical tags,
+      # share images and the sitemap point at the real site instead of a
+      # placeholder.
+      - key: SITE_URL
+        value: https://truetube.onrender.com

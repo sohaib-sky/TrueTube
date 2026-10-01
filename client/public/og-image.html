@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+  The source for the social share image and the iOS touch icon.
+
+  These are rendered by the browser and saved as PNG, because that is the only
+  way to get one: og:image has to be a raster format (Facebook, X, LinkedIn and
+  Slack all refuse SVG), and the same artwork is needed as a 180x180 PNG for
+  apple-touch-icon. Generating the artwork as HTML keeps it editable and in one
+  place instead of being a binary nobody can change.
+
+  Run scripts/og-image.mjs to regenerate.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap');
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        font-family: Inter, system-ui, sans-serif;
+        /* The same aurora the site renders, so the card matches the landing page
+           rather than looking like a different product. */
+        background:
+          radial-gradient(900px 620px at 8% -8%, #2b4bd4 0%, transparent 60%),
+          radial-gradient(820px 600px at 96% 8%, #b4299b 0%, transparent 62%),
+          radial-gradient(760px 560px at 78% 104%, #d1462f 0%, transparent 58%),
+          radial-gradient(700px 520px at 30% 96%, #1c8f7d 0%, transparent 60%),
+          linear-gradient(150deg, #101a3c 0%, #0a0d1c 100%);
+        color: #f2f6fb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 74px 78px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .left { max-width: 700px; }
+
+      .brand { display: flex; align-items: center; gap: 18px; }
+
+      .mark {
+        width: 74px; height: 74px; border-radius: 20px;
+        background: linear-gradient(150deg, #2f3a4d, #0a0e15);
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 10px 24px -12px rgba(0, 0, 0, 0.9);
+        display: flex; align-items: center; justify-content: center;
+      }
+      .mark svg { width: 30px; height: 30px; fill: #fff; }
+
+      .word { font-size: 42px; font-weight: 800; letter-spacing: -0.02em; }
+      .word span { color: #5eead4; }
+      .tagline {
+        margin-top: 6px; font-size: 15px; font-weight: 600;
+        letter-spacing: 0.28em; text-transform: uppercase; color: rgba(167, 177, 194, 0.85);
+      }
+
+      h1 {
+        margin-top: 46px; font-size: 68px; line-height: 1.04;
+        font-weight: 800; letter-spacing: -0.035em;
+      }
+      h1 em { font-style: normal; color: #5eead4; }
+
+      p.sub {
+        margin-top: 22px; font-size: 25px; line-height: 1.45;
+        color: rgba(215, 224, 240, 0.86); font-weight: 500;
+      }
+
+      .pills { margin-top: 38px; display: flex; gap: 12px; flex-wrap: wrap; }
+      .pill {
+        font-size: 19px; font-weight: 600;
+        padding: 11px 20px; border-radius: 999px;
+        background: rgba(146, 178, 255, 0.12);
+        border: 1px solid rgba(163, 196, 255, 0.3);
+      }
+
+      .device {
+        width: 268px; height: 452px; border-radius: 34px;
+        background: linear-gradient(160deg, #2a3350 0%, #12172a 55%, #080b16 100%);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 40px 80px -30px rgba(0, 0, 0, 0.95);
+        padding: 30px 24px;
+        display: flex; flex-direction: column; gap: 16px;
+      }
+      .device .glyph {
+        width: 74px; height: 74px; border-radius: 24px;
+        background: linear-gradient(150deg, #7ff0dd, #23c3a4);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 40px -6px rgba(94, 234, 212, 0.7);
+      }
+      .device .glyph svg { width: 34px; height: 34px; stroke: #04231d; }
+      .line { height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.14); }
+      .line.w80 { width: 80%; }
+      .line.w60 { width: 60%; }
+      .line.w40 { width: 40%; background: rgba(255, 255, 255, 0.09); }
+      .chip {
+        margin-top: auto; height: 44px; border-radius: 999px;
+        background: linear-gradient(140deg, #7ff0dd, #23c3a4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="left">
+      <div class="brand">
+        <div class="mark">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+        </div>
+        <div>
+          <div class="word">True<span>Tube</span></div>
+          <div class="tagline">Modern Media Utility</div>
+        </div>
+      </div>
+
+      <h1>See every format.<br /><em>Download the right one.</em></h1>
+      <p class="sub">Paste a link. Get the real, honest list of what that source offers &mdash; with audio.</p>
+
+      <div class="pills">
+        <div class="pill">YouTube</div>
+        <div class="pill">TikTok</div>
+        <div class="pill">Facebook</div>
+        <div class="pill">Twitch</div>
+        <div class="pill">+20 more</div>
+      </div>
+    </div>
+
+    <div class="device">
+      <div class="glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2 3 14h9l-1 8 10-12h-9z" />
+        </svg>
+      </div>
+      <div class="line w80"></div>
+      <div class="line w60"></div>
+      <div class="line w40"></div>
+      <div class="chip"></div>
+    </div>
+  </body>
+</html>

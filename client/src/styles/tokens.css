@@ -1,0 +1,169 @@
+/* TrueTube design tokens ---------------------------------------------------
+   Deep charcoal canvas, teal/mint primary accent, soft sky-blue secondary.
+   Surfaces are dark translucent glass; accents are used only where they carry
+   meaning (primary action, active state, focus).                            */
+
+:root {
+  color-scheme: dark;
+
+  /* Canvas */
+  --bg-0: #05070a;
+  --bg-1: #080b11;
+  --bg-2: #0b0f16;
+
+  /* Text */
+  --text-1: #f2f6fb;
+  --text-2: #a7b1c2;
+  --text-3: #6f7a8c;
+  --text-4: #4d5666;
+  --on-accent: #032420;
+
+  /* Accents */
+  --mint: #5eead4;
+  --mint-2: #2dd4bf;
+  --mint-3: #14b8a6;
+  --sky: #7dd3fc;
+  --sky-2: #38bdf8;
+  --violet: #c4b5fd;
+  --blush: #f9a8d4;
+
+  --accent: var(--mint);
+  --accent-2: var(--sky);
+  --accent-soft: rgba(94, 234, 212, 0.13);
+  --accent-line: rgba(94, 234, 212, 0.34);
+  --accent-glow: rgba(45, 212, 191, 0.45);
+
+  --success: #5eead4;
+  --danger: #ff8a8a;
+  --danger-soft: rgba(255, 138, 138, 0.12);
+  --danger-line: rgba(255, 138, 138, 0.3);
+  --warning: #fbbf72;
+  --warning-soft: rgba(251, 191, 114, 0.12);
+  --warning-line: rgba(251, 191, 114, 0.28);
+
+  /* Glass */
+  --glass-1: rgba(255, 255, 255, 0.045);
+  --glass-2: rgba(255, 255, 255, 0.07);
+  --glass-3: rgba(255, 255, 255, 0.1);
+  --line-1: rgba(255, 255, 255, 0.09);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --line-3: rgba(255, 255, 255, 0.26);
+  --blur-md: 22px;
+  --blur-lg: 34px;
+
+  /* Warm banner ----------------------------------------------------------
+     The header is the one bright surface in a dark interface: a slab of
+     golden glass. Every tone here is layered — a sheen, a body, and a rim —
+     so it reads as translucent material rather than a flat yellow rectangle,
+     with the animated world still visible through it. */
+  --gold-100: #fff6d6;
+  /* The gold ramp is gone. The banner it served was a saturated gold slab, which
+     fought the blue/violet/mint world behind the page and forced every label on
+     the header into dark warm ink. The banner now uses the --nav-* glass below
+     and the site's own light text. Nothing references the gold tokens any more,
+     so they are not kept around as dead configuration. */
+
+  /* Banner glass — a deep aurora-indigo rather than gold.
+     The world behind the page is blue/violet/mint, and a saturated gold slab
+     fought all three at once: it read as a foreign object dropped onto the
+     design, and its dark-ink labels forced every nav colour to be warm. A cool
+     dark glass belongs to the same family as the background, lets the animated
+     world read through it, and takes the site's own light text unchanged. */
+  --nav-glass: rgba(17, 24, 48, 0.62);
+  --nav-glass-2: rgba(13, 19, 40, 0.78);
+  --nav-line: rgba(163, 196, 255, 0.26);
+  --nav-line-soft: rgba(150, 180, 240, 0.16);
+  --nav-glow: rgba(94, 234, 212, 0.5);
+  --nav-shadow:
+    0 32px 70px -38px rgba(2, 6, 20, 0.95), 0 0 70px -32px var(--nav-glow);
+  /* One pill tint for every nav item, so the row reads as a single system
+     rather than five unrelated words. */
+  --nav-pill: rgba(146, 178, 255, 0.08);
+  --nav-pill-hover: rgba(160, 190, 255, 0.16);
+  --nav-pill-active: rgba(94, 234, 212, 0.14);
+
+  /* Radii — the interface is pill-and-slab, not a grid of soft cards */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 26px;
+  --r-xl: 34px;
+  --r-pill: 999px;
+
+  /* Elevation — layered like real materials: contact shadow, body shadow, rim */
+  --shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 24px 60px -40px rgba(0, 0, 0, 0.95);
+  --shadow-2: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 40px 90px -50px rgba(0, 0, 0, 1);
+  --shadow-accent: 0 14px 40px -14px var(--accent-glow);
+  --shadow-slab: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 50px 110px -60px rgba(0, 0, 0, 1), 0 0 90px -50px rgba(45, 212, 191, 0.55);
+
+  /* 3D system ---------------------------------------------------------------
+     Bevel = bright top/left edge, dark bottom/right edge. This is what sells a
+     surface as a physical object rather than a flat translucent rectangle.   */
+  --bevel-light: rgba(255, 255, 255, 0.42);
+  --bevel-light-soft: rgba(255, 255, 255, 0.16);
+  --bevel-dark: rgba(0, 0, 0, 0.55);
+  --specular: rgba(255, 255, 255, 0.9);
+  --perspective: 1400px;
+  --lift: 8px;
+
+  /* Type */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.78rem);
+  --fs-sm: clamp(0.81rem, 0.79rem + 0.1vw, 0.875rem);
+  --fs-base: clamp(0.94rem, 0.91rem + 0.14vw, 1rem);
+  --fs-lg: clamp(1.02rem, 0.99rem + 0.2vw, 1.12rem);
+  --fs-xl: clamp(1.2rem, 1.12rem + 0.4vw, 1.4rem);
+  --fs-2xl: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
+  --fs-3xl: clamp(2.1rem, 1.7rem + 1.9vw, 3rem);
+  /* Sized so each masked headline line fits its column on one line at every
+     breakpoint — the second line breaking would break the mask reveal. */
+  --fs-hero: clamp(2.15rem, 1.32rem + 2.6vw, 3.45rem);
+
+  /* Type system -----------------------------------------------------------
+     One editorial scale: heavy, tightly tracked display type; compact confident
+     navigation and buttons; comfortable, slightly muted body copy. Tracking
+     tightens as the type grows, which is what keeps large headlines reading as
+     one solid shape instead of loose letters. */
+  --tracking-display: -0.042em;
+  --tracking-heading: -0.032em;
+  --tracking-title: -0.02em;
+  --tracking-body: -0.011em;
+  --tracking-caps: 0.1em;
+
+  --weight-display: 800;
+  --weight-heading: 750;
+  --weight-title: 700;
+  --weight-nav: 700;
+  --weight-body: 450;
+
+  --leading-display: 0.94;
+  --leading-heading: 1.04;
+  --leading-body: 1.62;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  --container: 1120px;
+  --container-narrow: 760px;
+  --header-h: 72px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --header-h: 60px;
+  }
+}
