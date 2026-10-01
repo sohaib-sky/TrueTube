@@ -25,11 +25,15 @@ if errorlevel 1 (
 
 git log --oneline -1
 echo.
-echo   Pushing. A browser window will open asking you to sign in to GitHub.
-echo   Press "Authorize" there - this is the only step that needs you.
+echo   Pushing to branch 'main'. A browser window will open asking you to sign
+echo   in to GitHub. Press "Authorize" there - this is the only step that needs
+echo   you.
 echo.
 
-git push -u origin master
+rem 'main' rather than 'master': it is the branch the repository already had, and
+rem the one Render treats as the default. Pushing to a second branch would leave
+rem Render deploying a repository that still looks empty.
+git push -u origin main
 
 if errorlevel 1 (
   echo.
@@ -38,9 +42,6 @@ if errorlevel 1 (
   echo     - the sign-in was cancelled or timed out
   echo     - the repository name is misspelled, or it is under a different
   echo       account than the one you signed in with
-  echo     - the repository already has a commit (for example a README). In that
-  echo       case run:   git pull --rebase origin master
-  echo       and then run this file again.
   echo.
   pause
   exit /b 1
