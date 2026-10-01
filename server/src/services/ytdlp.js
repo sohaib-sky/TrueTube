@@ -158,7 +158,7 @@ const STDERR_PATTERNS = [
     status: 400,
   },
   {
-    test: /unable to extract|failed to parse json|extractor did not return|generic extraction failed|unable to parse|unsupported url/i,
+    test: /unable to extract|failed to parse json|extractor did not return|generic extraction failed|unable to parse|cannot parse|could not parse|unable to determine|please report this issue|unsupported url/i,
     code: 'EXTRACTOR_ERROR',
     message: 'Metadata extraction failed. The source may have changed or is temporarily unavailable.',
     status: 422,
