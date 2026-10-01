@@ -12,7 +12,7 @@ echo.
 echo   Publish TrueTube to GitHub
 echo   ============================
 echo.
-echo   Repository: https://github.com/sohaib4946/truetube
+echo   Repository: https://github.com/sohaib-sky/TrueTube
 echo.
 
 where git >nul 2>&1
