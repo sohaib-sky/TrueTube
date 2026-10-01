@@ -22,13 +22,18 @@ RUN npm ci --no-audit --no-fund
 COPY client ./client
 COPY server ./server
 
-# The built frontend, which the API serves in production.
+# The built frontend, which the API serves in production. The build script also
+# regenerates the sitemap from the server's route table first, so the image can
+# never ship a sitemap that disagrees with the routes it actually serves.
 RUN npm run build
 
 # The server as a single file, with its runtime dependencies inlined. The
 # createRequire shim is required: express and its dependencies call `require()`
 # internally, which esbuild's ESM output cannot otherwise satisfy.
-RUN npx esbuild server/src/server.js \
+#
+# The installed binary is used rather than `npx esbuild` so nothing has to
+# resolve the package at build time.
+RUN node_modules/.bin/esbuild server/src/server.js \
       --bundle --platform=node --format=esm --target=node20 \
       --outfile=dist/server/src/app.mjs \
       --banner:js="import{createRequire as __ttCreateRequire}from'node:module';const require=__ttCreateRequire(import.meta.url);" \
@@ -66,7 +71,12 @@ COPY --from=build /app/server/public ./server/public
 
 # Downloads are scratch space. Keeping them out of the image means a fresh deploy
 # starts clean and the layer stays small.
-RUN mkdir -p /tmp/truetube
+#
+# The chown is load-bearing. This line runs as root, so without it the directory
+# is root-owned while the server below runs as `node` — which then cannot create
+# a job directory inside it. Every single download would fail with EACCES, and
+# the health check would still report everything as healthy.
+RUN mkdir -p /tmp/truetube && chown node:node /tmp/truetube
 
 # Downloads are user-supplied links producing user-supplied files, so the server
 # runs unprivileged. A public file server should not be root.
