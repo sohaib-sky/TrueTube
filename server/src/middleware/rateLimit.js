@@ -18,6 +18,17 @@ const handlerFor = (code, message) => (req, res, next) => {
 const base = {
   standardHeaders: 'draft-7',
   legacyHeaders: false,
+  // Behind a proxy (a CDN, a tunnel, nginx) every request carries
+  // X-Forwarded-For. With `trust proxy` off, express-rate-limit logs a
+  // ERR_ERL_UNEXPECTED_X_FORWARDED_FOR stack trace per request and counts by the
+  // proxy's address, which shares one bucket across all visitors. The request
+  // still succeeds, so this is not a failure mode on its own: silencing the
+  // trace only keeps the log readable. Actually identifying a client behind a
+  // proxy needs TRUST_PROXY=true, which Go Live.bat sets because it always
+  // starts the tunnel.
+  validate: config.trustProxy
+    ? undefined
+    : { xForwardedForHeader: false, trustProxy: false },
   // The download endpoint streams a response body; the limiter must not hold
   // the connection open, so failed counts are forwarded to the next handler.
   handler: handlerFor('RATE_LIMITED', 'Too many requests. Please wait a moment and try again.'),

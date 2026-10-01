@@ -11,6 +11,13 @@ echo.
 echo   Starting TrueTube...
 echo.
 
+REM The public tunnel is a reverse proxy, so every request carries
+REM X-Forwarded-For. Without TRUST_PROXY the rate limiter cannot identify a
+REM client and fails the request, which showed up to visitors as a dead site.
+REM The server is always started behind the tunnel from this script, so trust
+REM the first hop. (Start TrueTube.bat, used with no tunnel, leaves it off.)
+set "TRUST_PROXY=true"
+
 REM --- 1. is the API server already up? ---
 powershell -NoProfile -Command ^
   "try { $null = Invoke-RestMethod 'http://localhost:5000/api/health' -TimeoutSec 5; exit 0 } catch { exit 1 }"
