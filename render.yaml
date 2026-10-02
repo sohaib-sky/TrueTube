@@ -29,9 +29,11 @@ services:
       - key: NODE_ENV
         value: production
 
-      # Render assigns this; the app reads PORT from the environment.
-      - key: PORT
-        value: 5000
+      # PORT is deliberately NOT set here. Render assigns the port the service is
+      # reachable on, and hardcoding 5000 makes the container listen somewhere
+      # Render is not routing to — the deploy then fails with a port mismatch
+      # that looks nothing like an application fault. The app reads PORT from the
+      # environment, and only falls back to 5000 when it is unset.
 
       # Every limiter counts by client IP. Render forwards the real address in
       # X-Forwarded-For, so without this the whole internet counts as one address
@@ -49,8 +51,10 @@ services:
       - key: MAX_CONCURRENT_DOWNLOADS
         value: 2
 
-      # Set this to the public URL once you have a domain, so canonical tags,
-      # share images and the sitemap point at the real site instead of a
-      # placeholder.
+      # Canonical tags, share images and the sitemap are built from this. It is
+      # only a starting value: if Render hands you a different host (for example
+      # truetube-abc12, because the plain name was already taken), set SITE_URL to
+      # the address shown in the dashboard. Otherwise every canonical and OG link
+      # points at a host that does not serve the site.
       - key: SITE_URL
         value: https://truetube.onrender.com
