@@ -1,4 +1,8 @@
 # Dependencies — rebuilt inside the container from package-lock.json
+# Vercel CLI writes the linked project id here; it is per-machine, not part of
+# the app, and must never be committed.
+.vercel/
+
 node_modules/
 
 # Build output. The Docker build produces these itself, and committing them
