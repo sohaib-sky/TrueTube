@@ -85,10 +85,11 @@ const CATALOG = {
   BAD_RESPONSE: { title: 'Unexpected response', hint: 'The server replied with something unreadable. Please try again.' },
   // Deliberately does not blame the link. The request never reached an API at
   // all, so telling someone to check their URL sends them off to fix something
-  // that was already correct.
+  // that was already correct. The hint adds what the message does not: that the
+  // link they pasted was fine.
   BACKEND_UNAVAILABLE: {
     title: 'Download service offline',
-    hint: 'This copy of TrueTube is the interface only. Downloads need the service running behind it.',
+    hint: 'Your link is fine. Nothing can download until the API is running behind this page.',
   },
   INTERNAL_ERROR: { title: 'Server error', hint: 'Something went wrong on our side. Please try again.' },
 };
