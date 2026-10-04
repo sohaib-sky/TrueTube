@@ -2,7 +2,7 @@
   "name": "truetube",
   "version": "1.0.0",
   "private": true,
-  "description": "TrueTube — a modern, real media download utility for supported video URLs.",
+  "description": "TrueTube â€” a modern, real media download utility for supported video URLs.",
   "type": "module",
   "engines": {
     "node": ">=18.17"
@@ -13,7 +13,7 @@
     "dev:client": "vite --config client/vite.config.js",
     "client": "npm run dev:client",
     "server": "node server/src/server.js",
-    "build": "node scripts/build-sitemap.mjs && node scripts/build-supported-fallback.mjs && vite build --config client/vite.config.js",
+    "build": "node scripts/build-sitemap.mjs && node scripts/build-supported-fallback.mjs && vite build --config client/vite.config.js && node scripts/bake-head.mjs",
     "preview": "vite preview --config client/vite.config.js",
     "start": "node server/src/server.js --production"
   },
@@ -38,3 +38,4 @@
     "vite": "^6.0.7"
   }
 }
+
