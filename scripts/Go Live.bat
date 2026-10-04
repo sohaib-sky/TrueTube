@@ -72,6 +72,13 @@ if defined URL (
 :goturl
 :fail
 
+REM The tunnel dies on its own — localtunnel dropped a 2.9 MB transfer mid
+REM stream, and its own server answers 503 now and then. The watcher restarts it
+REM on the same pinned subdomain, so the address stops changing.
+echo.
+echo   Starting the address watchdog...
+start "TrueTube Watchdog" /min cmd /c "%~dp0watchdog-start.bat"
+
 echo.
 echo   ============================================
 if defined URL (
