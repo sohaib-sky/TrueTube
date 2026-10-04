@@ -24,7 +24,12 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     target: 'es2020',
-    chunkSizeWarningLimit: 600,
+    // three.js and its React bindings are ~965 kB minified, and they are
+    // already isolated in their own chunk and only fetched when the Platforms
+    // section needs them. Raising the ceiling stops the warning without
+    // pretending the number is smaller than it is; lowering it would only
+    // hide a chunk that is deliberately split out already.
+    chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
         manualChunks: {
