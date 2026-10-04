@@ -29,18 +29,21 @@ function UniverseFallback() {
  * allowlist, so it can never advertise a source the API would reject.
  */
 export default function Platforms() {
-  const { status, data } = useSupportedSources();
+  const { status, source, data } = useSupportedSources();
   const count = data?.platforms?.length ?? 0;
 
   const text = useMemo(() => {
     // Kept to two lines on a laptop. The previous wording ran to three, which
     // pushed the card grid below the fold and made arriving on this page look
     // like it opened into an empty band before anything happened.
-    if (status === 'ready') {
+    if (status === 'ready' && source === 'live') {
       return 'Every hostname below is accepted. TrueTube attempts the link and reports exactly what the source returns.';
     }
+    if (status === 'ready') {
+      return 'These hostnames ship with TrueTube. Downloads need the service to be running.';
+    }
     return 'These hostnames are read live from the engine, so the list always matches what the server can attempt.';
-  }, [status]);
+  }, [status, source]);
 
   return (
     <section className="section" id="platforms" aria-labelledby="platforms-heading">

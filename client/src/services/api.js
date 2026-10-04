@@ -38,12 +38,30 @@ async function toApiError(response) {
     });
   }
 
+  if (response.status === 429) {
+    return new ApiError({
+      code: 'RATE_LIMITED',
+      message: 'Too many requests. Please wait a moment and try again.',
+      status: response.status,
+    });
+  }
+
+  // A 404 that is not our JSON envelope means the request never reached the
+  // API — a static host serving the frontend with no backend behind it, or a
+  // proxy answering on its behalf. Saying "unreadable response" there is
+  // actively misleading: it reads like a busy server and sends people off to
+  // retry something that cannot succeed until a backend exists.
+  if (response.status === 404) {
+    return new ApiError({
+      code: 'BACKEND_UNAVAILABLE',
+      message: 'The download service is not running. This page is only the interface.',
+      status: response.status,
+    });
+  }
+
   return new ApiError({
-    code: response.status === 429 ? 'RATE_LIMITED' : 'BAD_RESPONSE',
-    message:
-      response.status === 429
-        ? 'Too many requests. Please wait a moment and try again.'
-        : 'The server returned an unexpected response.',
+    code: 'BAD_RESPONSE',
+    message: 'The server returned an unexpected response.',
     status: response.status,
   });
 }

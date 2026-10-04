@@ -1058,15 +1058,21 @@
     width: 40px;
   }
 
-  /* Keep the icon and the field on one line; the button takes the next. */
+  /* Keep the icon and the field on one line; the button takes the next.
+     The field is given a real touch height here: with the desktop row it
+     inherited, it measured 27px, which is unusable for typing a link on a
+     phone and easy to miss when tapping. */
   .urlbar .glass-input {
     flex: 1 1 60px;
     width: auto;
     padding: 0 4px;
+    min-height: 48px;
   }
 
   .urlbar__clear {
     margin-left: auto;
+    width: 38px;
+    height: 38px;
   }
 
   .urlbar__action {
@@ -1971,7 +1977,9 @@
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--text-4);
+  /* --text-3, not --text-4: this paragraph sits over the moving aurora, and at
+     #4d5666 it disappeared entirely behind the lighter parts of the gradient. */
+  color: var(--text-3);
   font-size: var(--fs-xs);
   line-height: 1.6;
 }
@@ -1980,6 +1988,25 @@
   .footer__note {
     order: 3;
     text-align: left;
+  }
+
+  /* The desktop links are inline text with a small line box, which is a 14px
+     tap target. On a phone each one needs the full 44px minimum, so the row is
+     padded out rather than the font enlarged. */
+  .footer__links {
+    gap: 4px 22px;
+  }
+
+  .footer__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* The gap below the last section was left over from a layout with more
+     sections on it, and read as a dead band on the shorter sub-pages. */
+  .footer {
+    margin-top: clamp(24px, 4vw, 40px);
   }
 }
 

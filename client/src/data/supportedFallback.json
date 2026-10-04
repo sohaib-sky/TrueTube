@@ -1,0 +1,179 @@
+{
+  "platforms": [
+    {
+      "platform": "YouTube",
+      "hosts": [
+        "m.youtube.com",
+        "music.youtube.com",
+        "www.youtube.com",
+        "youtu.be",
+        "youtube.com"
+      ]
+    },
+    {
+      "platform": "TikTok",
+      "hosts": [
+        "tiktok.com",
+        "vm.tiktok.com",
+        "www.tiktok.com"
+      ]
+    },
+    {
+      "platform": "Facebook",
+      "hosts": [
+        "facebook.com",
+        "fb.watch",
+        "www.facebook.com"
+      ]
+    },
+    {
+      "platform": "X",
+      "hosts": [
+        "mobile.twitter.com",
+        "twitter.com",
+        "www.twitter.com",
+        "www.x.com",
+        "x.com"
+      ]
+    },
+    {
+      "platform": "Reddit",
+      "hosts": [
+        "old.reddit.com",
+        "redd.it",
+        "reddit.com",
+        "v.redd.it",
+        "www.reddit.com"
+      ]
+    },
+    {
+      "platform": "Twitch",
+      "hosts": [
+        "clips.twitch.tv",
+        "twitch.tv",
+        "www.twitch.tv"
+      ]
+    },
+    {
+      "platform": "Vimeo",
+      "hosts": [
+        "player.vimeo.com",
+        "vimeo.com"
+      ]
+    },
+    {
+      "platform": "SoundCloud",
+      "hosts": [
+        "on.soundcloud.com",
+        "soundcloud.com"
+      ]
+    },
+    {
+      "platform": "Dailymotion",
+      "hosts": [
+        "dai.ly",
+        "dailymotion.com",
+        "www.dailymotion.com"
+      ]
+    },
+    {
+      "platform": "Bilibili",
+      "hosts": [
+        "b23.tv",
+        "bilibili.com",
+        "www.bilibili.com"
+      ]
+    },
+    {
+      "platform": "LinkedIn",
+      "hosts": [
+        "linkedin.com",
+        "www.linkedin.com"
+      ]
+    },
+    {
+      "platform": "Bandcamp",
+      "hosts": [
+        "*.bandcamp.com",
+        "bandcamp.com"
+      ]
+    },
+    {
+      "platform": "Flickr",
+      "hosts": [
+        "flickr.com",
+        "www.flickr.com"
+      ]
+    },
+    {
+      "platform": "Internet Archive",
+      "hosts": [
+        "archive.org"
+      ]
+    },
+    {
+      "platform": "Kick",
+      "hosts": [
+        "kick.com"
+      ]
+    },
+    {
+      "platform": "Kickstarter",
+      "hosts": [
+        "kickstarter.com",
+        "www.kickstarter.com"
+      ]
+    },
+    {
+      "platform": "Mixcloud",
+      "hosts": [
+        "mixcloud.com",
+        "www.mixcloud.com"
+      ]
+    },
+    {
+      "platform": "Odysee",
+      "hosts": [
+        "odysee.com"
+      ]
+    },
+    {
+      "platform": "OK.ru",
+      "hosts": [
+        "ok.ru"
+      ]
+    },
+    {
+      "platform": "Rumble",
+      "hosts": [
+        "rumble.com"
+      ]
+    },
+    {
+      "platform": "Streamable",
+      "hosts": [
+        "streamable.com"
+      ]
+    },
+    {
+      "platform": "TED",
+      "hosts": [
+        "ted.com",
+        "www.ted.com"
+      ]
+    },
+    {
+      "platform": "Tumblr",
+      "hosts": [
+        "tumblr.com",
+        "www.tumblr.com"
+      ]
+    },
+    {
+      "platform": "VK",
+      "hosts": [
+        "vk.com"
+      ]
+    }
+  ]
+}

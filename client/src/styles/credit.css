@@ -111,3 +111,15 @@
   padding-top: clamp(14px, 1.5vw, 20px);
   border-top: 1px solid var(--line-2);
 }
+
+/* Every route renders exactly one section, and that section carries its own
+   credit. With the footer's signature band present as well, each page showed
+   the same line twice — once as plain text closing the section and again,
+   barely a screen later, as the pill. The pill is the deliberate one, so the
+   in-section copy stands down and every page is signed exactly once.
+
+   The credit is nested inside the section's .container rather than being a
+   direct child of the section, so this has to be a descendant selector. */
+main > section:only-of-type .credit {
+  display: none;
+}
